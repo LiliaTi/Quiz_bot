@@ -11,10 +11,6 @@ import redis
 from enum import Enum
 
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
 logger = logging.getLogger(__name__)
 
 State = Enum('State', 'QUESTION SOLUTION')
@@ -41,9 +37,7 @@ def handle_new_question_request(update, context, questions, data_base):
 def handle_give_up_attempt(update, context, questions, data_base):
     user = update.message.from_user
     right_answer = data_base.get(user.id).decode()
-    update.message.reply_text('Вот правильный ответ')
-    update.message.reply_text(right_answer)
-    update.message.reply_text('Лови следующий вопрос')
+    update.message.reply_text(f'Вот правильный ответ.\n{right_answer}\nЛови следующий вопрос')
     handle_new_question_request(update, context, questions, data_base)
 
 
@@ -70,6 +64,11 @@ def cancel(update, context):
 
 
 def main():
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+
     logger.info("Start TG bot")
     questions = get_questions()
 
