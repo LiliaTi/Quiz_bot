@@ -8,10 +8,6 @@ from common import get_questions
 import logging
 
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
 logger = logging.getLogger(__name__)
 
 
@@ -37,17 +33,7 @@ def handle_give_up_attempt(event, vk_api, questions, data_base):
     right_answer = data_base.get(event.user_id).decode()
     vk_api.messages.send(
         user_id=event.user_id,
-        message='Вот правильный ответ',
-        random_id=random.randint(1, 1000)
-    )
-    vk_api.messages.send(
-        user_id=event.user_id,
-        message=right_answer,
-        random_id=random.randint(1, 1000)
-    )
-    vk_api.messages.send(
-        user_id=event.user_id,
-        message='Лови следующий вопрос',
+        message=f'Вот правильный ответ\n{right_answer}\nЛови следующий вопрос',
         random_id=random.randint(1, 1000)
     )
     handle_new_question_request(event, vk_api, questions, data_base)
@@ -71,6 +57,11 @@ def handle_solution_attempt(event, vk_api, questions, data_base):
 
 
 def main():
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+    logger.info('Start VK Bot')
     vk_bot_token = os.environ.get('VK_BOT_TOKEN')
     vk_session = vk.VkApi(token=vk_bot_token)
     vk_api = vk_session.get_api()
@@ -83,7 +74,7 @@ def main():
 
     redis_data_base = redis.Redis(host=redis_host,
                                   port=redis_port,
-                                  db=0, password=redis_password)
+                                  db=1, password=redis_password)
 
     keyboard = VkKeyboard(one_time=False)
 
