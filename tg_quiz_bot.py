@@ -29,21 +29,21 @@ def start(update, context):
 def handle_new_question_request(update, context, questions, data_base):
     user = update.message.from_user
     question, answer = random.choice(list(questions.items()))
-    data_base.set(user.id, answer)
+    data_base.set(f'tg-{user.id}', answer)
     update.message.reply_text(question)
     return State.SOLUTION
 
 
 def handle_give_up_attempt(update, context, questions, data_base):
     user = update.message.from_user
-    right_answer = data_base.get(user.id).decode()
+    right_answer = data_base.get(f'tg-{user.id}').decode()
     update.message.reply_text(f'Вот правильный ответ.\n{right_answer}\nЛови следующий вопрос')
     handle_new_question_request(update, context, questions, data_base)
 
 
 def handle_solution_attempt(update, context, questions, data_base):
     user = update.message.from_user
-    right_answer = data_base.get(user.id).decode()
+    right_answer = data_base.get(f'tg-{user.id}').decode()
     if update.message.text.lower() in right_answer.lower():
         context.bot.sendMessage(chat_id=update.message.chat_id,
                                 text='Привильно! Так держать!')
