@@ -13,13 +13,13 @@ def get_questions():
 
         with open(current_path, 'r', encoding='KOI8-R') as file:
             items = file.read().split('\n\n')
-            for count, item in enumerate(items):
+            for item in items:
 
                 if item.startswith('Вопрос'):
                     question = ' '.join(item.split('\n')[1:])
                     questions.append(question)
-                    count += 1
-                    answer = ' '.join(items[count].split('\n')[1:])
+                if item.startswith('Ответ'):
+                    answer = ' '.join(item.split('\n')[1:])
                     answers.append(answer)
 
     return dict(zip(questions, answers))
