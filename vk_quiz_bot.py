@@ -21,7 +21,7 @@ def echo(event, vk_api):
 
 def handle_new_question_request(event, vk_api, questions, data_base):
     question, answer = random.choice(list(questions.items()))
-    data_base.set(event.user_id, answer)
+    data_base.set(f'vk-{event.user_id}', answer)
     vk_api.messages.send(
         user_id=event.user_id,
         message=question,
@@ -30,7 +30,7 @@ def handle_new_question_request(event, vk_api, questions, data_base):
 
 
 def handle_give_up_attempt(event, vk_api, questions, data_base):
-    right_answer = data_base.get(event.user_id).decode()
+    right_answer = data_base.get(f'vk-{event.user_id}').decode()
     vk_api.messages.send(
         user_id=event.user_id,
         message=f'Вот правильный ответ\n{right_answer}\nЛови следующий вопрос',
@@ -40,7 +40,7 @@ def handle_give_up_attempt(event, vk_api, questions, data_base):
 
 
 def handle_solution_attempt(event, vk_api, questions, data_base):
-    right_answer = data_base.get(event.user_id).decode()
+    right_answer = data_base.get(f'vk-{event.user_id}').decode()
     if event.text.lower() in right_answer.lower():
         vk_api.messages.send(
             user_id=event.user_id,
@@ -74,7 +74,7 @@ def main():
 
     redis_data_base = redis.Redis(host=redis_host,
                                   port=redis_port,
-                                  db=1, password=redis_password)
+                                  db=0, password=redis_password)
 
     keyboard = VkKeyboard(one_time=False)
 
